@@ -28,7 +28,7 @@ void Tick_lock(){
 			}
 			else if ((PINA & 0x80) == 0x80)
 			{
-				lock_state = unlock;
+				lock_state = lock;
 			}
 			else lock_state = init;
 			break;
@@ -40,7 +40,7 @@ void Tick_lock(){
 			}
 			else if ((PINA & 0x80) == 0x80)
                         {
-                                lock_state = unlock;
+                                lock_state = lock;
                         }
 			else lock_state = init;
 			break;
@@ -52,7 +52,7 @@ void Tick_lock(){
                         }
 			else if ((PINA & 0x80) == 0x80)
                         {
-                                lock_state = unlock;
+                                lock_state = lock;
                         }
                         else lock_state = init;
 			break;
@@ -60,17 +60,21 @@ void Tick_lock(){
 			PORTC = 4;
 			if (PINA == 0x00){
 				lock_state = unlock;
+				PORTB = 1;
 			}
 			else if ((PINA & 0x80) == 0x80){
-				lock_state = unlock;
+				lock_state = lock;
 			}
 			else lock_state = init;
 			break;
 				
 		case unlock:
 			PORTC = 5;
-			PORTB = 1;
+			
 			break;
+		case lock:
+			PORTC = 6;
+			PORTB = 0
 		default:
 			lock_state = Start;
 			break;
@@ -104,6 +108,7 @@ int main(void) {
 	DDRB = 0xFF; PORTB = 0x00;
 	DDRC = 0xFF; PORTC = 0x00;
     /* Insert your solution below */
+	PORTB = 0;
 	lock_state = Start;
     while (1) {
 	Tick_lock();
