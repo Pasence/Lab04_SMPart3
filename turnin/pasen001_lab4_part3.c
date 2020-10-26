@@ -11,7 +11,7 @@
 #ifdef _SIMULATE_
 #include "simAVRHeader.h"
 #endif
-enum Lock_States{ Start, init, press_pound, rel_pound,y_press, unlock} lock_state;
+enum Lock_States{ Start, init, press_pound, rel_pound,y_press, unlock,lock} lock_state;
 
 void Tick_lock(){
 	
@@ -74,7 +74,7 @@ void Tick_lock(){
 			break;
 		case lock:
 			PORTC = 6;
-			PORTB = 0
+			PORTB = 0;
 		default:
 			lock_state = Start;
 			break;
