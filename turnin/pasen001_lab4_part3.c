@@ -11,29 +11,22 @@
 #ifdef _SIMULATE_
 #include "simAVRHeader.h"
 #endif
-enum Lock_States{ Start, init, press_pound, rel_pound, unlock} lock_state;
+enum Lock_States{ Start, init, press_pound, rel_pound,y_press, unlock} lock_state;
 
 void Tick_lock(){
-	unsigned char x_but;
-	unsigned char y_but;
-	unsigned char pnd_but;
-	unsigned char lock_but;
-	x_but = PINA & 0x01;
-	y_but = (PINA & 0x02) >> 1;
-	pnd_but = (PINA & 0x04) >> 2;
-	lock_but = (PINA & 0x80) >> 7;
+	
 	switch(lock_state){
 		case Start:
 			lock_state = init;
 			break;
 		case init:
 			PORTC = 1;
-			if (pnd_but == 1 && x_but == 0 && y_but ==0 && lock_but == 0)
+			if (PINA == 0x04)
 			{
 				lock_state = press_pound;
 				
 			}
-			else if (pnd_but == 0 && x_but == 0 && y_but ==0 && lock_but == 1)
+			else if ((PINA & 0x80) == 0x80)
 			{
 				lock_state = unlock;
 			}
@@ -41,11 +34,11 @@ void Tick_lock(){
 			break;
 		case press_pound:
 		 	PORTC = 2;
-			if (pnd_but == 0 && x_but == 0 && y_but ==0 && lock_but == 0)
+			if (PINA == 0x00)
 			{
 				lock_state = rel_pound;
 			}
-			else if (pnd_but == 0 && x_but == 0 && y_but ==0 && lock_but == 1)
+			else if ((PINA & 0x80) == 0x80)
                         {
                                 lock_state = unlock;
                         }
@@ -53,18 +46,29 @@ void Tick_lock(){
 			break;
 		case rel_pound:
 		 	PORTC = 3;	
-			if (pnd_but == 0 && x_but == 0 && y_but ==1 && lock_but == 0)
+			if (PINA == 0x02)
                         {
-                                lock_state = unlock;
+                                lock_state = y_press;
                         }
-			else if (pnd_but == 0 && x_but == 0 && y_but ==0 && lock_but == 1)
+			else if ((PINA & 0x80) == 0x80)
                         {
                                 lock_state = unlock;
                         }
                         else lock_state = init;
 			break;
-		case unlock:
+		case y_press:
 			PORTC = 4;
+			if (PINA == 0x00){
+				lock_state = unlock;
+			}
+			else if ((PINA & 0x80) == 0x80){
+				lock_state = unlock;
+			}
+			else lock_state = init;
+			break;
+				
+		case unlock:
+			PORTC = 5;
 			PORTB = 1;
 			break;
 		default:
