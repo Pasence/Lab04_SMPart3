@@ -21,7 +21,7 @@ void Tick_lock(){
 			break;
 		case init:
 			PORTC = 1;
-			if (PINA == 0x04)
+			if ((PINA & 0x07) == 0x04)
 			{
 				lock_state = press_pound;
 				
@@ -34,7 +34,7 @@ void Tick_lock(){
 			break;
 		case press_pound:
 		 	PORTC = 2;
-			if (PINA == 0x00)
+			if ((PINA & 0x07) == 0x00)
 			{
 				lock_state = rel_pound;
 			}
@@ -46,7 +46,7 @@ void Tick_lock(){
 			break;
 		case rel_pound:
 		 	PORTC = 3;	
-			if (PINA == 0x02)
+			if ((PINA & 0x07) == 0x02)
                         {
                                 lock_state = y_press;
                         }
@@ -58,7 +58,7 @@ void Tick_lock(){
 			break;
 		case y_press:
 			PORTC = 4;
-			if (PINA == 0x00){
+			if ((PINA & 0x07) == 0x00){
 				lock_state = y_rel;
 			}
 			else if ((PINA & 0x80) == 0x80){
